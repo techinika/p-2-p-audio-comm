@@ -1,8 +1,8 @@
 import { useUserAuth } from "../Context/AuthContext";
+import LoadingScreen from "./Loading";
 
 export default function Home(){
     const { user, logOut } = useUserAuth();
-    console.log(user)
     const handleLogout = async () => {
         try{
             await logOut();
@@ -11,9 +11,12 @@ export default function Home(){
             alert(error.message)
         }
     }
+    if(user == null){
+        return <LoadingScreen/>
+    }
     return(
-        <>  
-        <h1>Welcome {user.email}</h1>
+        <>
+        <h1>welcome {user.email}</h1>
         <button onClick={handleLogout}>Logout</button>
         </>
     );
