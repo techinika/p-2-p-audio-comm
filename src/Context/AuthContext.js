@@ -6,7 +6,6 @@ import {
     onAuthStateChanged
 } from "firebase/auth";
 import { auth } from "../firebase";
-// Importing ends here
 
 const AuthContext = createContext();
 export function AuthContextProvider({ children }){
@@ -18,11 +17,11 @@ export function AuthContextProvider({ children }){
         return signInWithEmailAndPassword(auth, email, password);
     }
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const listen = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
         });
         return () => {
-            unsubscribe();
+            listen();
         }
     },[]);
     function logOut(){
