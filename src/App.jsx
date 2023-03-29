@@ -8,8 +8,8 @@ function App() {
     <>
     <AuthContextProvider>
       <Routes>
-        <Route path="/" element={<Index/>}></Route>
-        <Route path="/home" element={
+        <Route path="/join" element={<Index/>}></Route>
+        <Route path="/" element={
           <ProtectedRoute>
             <Home/>
           </ProtectedRoute>}

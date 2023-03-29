@@ -14,9 +14,10 @@ export default function Home(){
     if(user == null){
         return <LoadingScreen/>
     }
+    console.log(user)
     return(
         <>
-        <h1>welcome {user.email}</h1>
+        <h1>welcome {user.displayName}</h1>
         <button onClick={handleLogout}>Logout</button>
         </>
     );
