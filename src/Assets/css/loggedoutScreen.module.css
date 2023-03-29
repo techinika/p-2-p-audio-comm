@@ -1,0 +1,300 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: 'Inter';
+    outline: none;
+}
+@font-face {
+    font-family: "Inter";   
+    src: url("../fonts/Inter/Inter-VariableFont_slnt\,wght.ttf");
+}
+@font-face {
+    font-family: "Comfortaa";   
+    src: url("../fonts/Comfortaa/static/Comfortaa-Regular.ttf");
+}
+.header{
+    padding: 20px 70px 20px 70px;
+    display: flex;
+    justify-content: space-between;
+}
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    width: 240px;
+}
+.lightbluebtn{
+    background-color: #E3F2FF;
+    color: #0088FF;
+    border: none;
+    padding: 10px 28px 10px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+}
+.bluebtn{
+    background-color: #0088FF;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 28px 10px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+}
+.createaccBtn{
+    background-color: #0088FF;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 28px 10px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+}
+.content{
+    display: flex;
+    align-items: center;
+    /* background-color: red; */
+    justify-content: space-between;
+    padding: 50px 0px 50px 70px;
+}
+.left{
+    width: 600px;
+}
+.cta{
+    font-weight: bold;
+    font-size: 70px;
+    font-family: 'Inter';
+}
+.txt{
+    font-size: 20px;
+    width: 95%;
+}
+.controlsDiv{
+    display: flex;
+    justify-content: space-between;
+    padding-right: 50px;
+}
+.formdiv{
+    display: flex;
+    border: 2px solid #0088FF;
+    background-color: #E3F2FF;
+    border-radius: 10px;
+    width: 350px;
+    height: 40px;
+}
+.linkinput{
+    width: 280px;
+    height: 100%;
+    border: none;
+    border-radius: 10px 0px 0px 10px;
+    padding-left: 10px;
+    font-size: 14px;
+    background-color: #E3F2FF;
+}
+.joinicon{
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(../images/Icons/join.png);
+}
+.joinbtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    border: none;
+    border-radius: 0px 3px 3px 0px;
+    background-color: #0088FF;
+    cursor: pointer;
+}
+.topuser{
+    display: block;
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(../images/Images/top.jpg);
+}
+.bottomuser{
+    display: block;
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(../images/Images/bottom.jpg);
+}
+.leftuser{
+    display: block;
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(../images/Images/left.jpg);
+}
+.rightuser{
+    display: block;
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(../images/Images/right.jpg);
+}
+.centeruser{
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(../images/Images/center.jpg);
+}
+.ringone{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    background-color: #dfedfa;
+}
+.ringtwo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75px;
+    height: 75px;
+    border-radius: 75px;
+    background-color: #bde0ff;
+}
+.right{
+    width: 350px;
+    height: 380px;
+    margin-left: 100px;
+    margin-right: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.top{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.center{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.bottom{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footer{
+    position: absolute;
+    bottom: 0;
+}
+.footertxt{
+    padding: 20px 70px 20px 70px;
+}
+.rightmobile{
+    display: none;
+}
+.ctamobile{
+    visibility: hidden;
+    display: none;
+    font-size: 0px;
+}
+@media only screen and (max-width: 1206px) {
+    .right{
+        display: none;
+    }
+    .rightmobile{
+        display: block;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 600px;
+        padding: 20px;
+    }
+    .content{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 0px 50px 0px;
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+    .leftuser{
+        width: 60px;
+        height: 60px;
+    }
+    .rightuser{
+        width: 60px;
+        height: 60px;
+    }
+    .centeruser{
+        width: 60px;
+        height: 60px;
+    }   
+    .footer{
+        display: none;
+    }
+}
+@media only screen and (max-width: 767px) {
+    .header{
+        padding: 20px 30px 20px 30px;
+    }
+    .cta{
+        font-size: 60px;
+    }
+}
+@media only screen and (max-width: 660px) {
+    .left{
+        width: auto;
+        padding: 20px 30px;
+    }
+    .right{
+        width: auto;
+        padding: 20px 30px;
+    }
+    .cta{
+        visibility: hidden;
+        display: none;
+    }
+    .ctamobile{
+        visibility: visible;
+        display: block;
+        font-size: 50px;
+        font-weight: bold;
+    }
+    .createaccBtn{
+        display: none;
+        visibility: hidden;
+    }
+    .rightmobile{
+        display: none;
+        visibility: hidden;
+    }
+}
+@media only screen and (max-width: 482px) {
+    .ctamobile{
+        font-size: 40px;
+    }
+    .lightbluebtn{
+        display: none;
+        visibility: hidden;
+    }
+    .buttons{
+        width: auto;
+    }
+    .left{
+        padding: 20px 15px;
+    }
+}
