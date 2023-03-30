@@ -145,7 +145,7 @@ export default function Index(){
                 <input type="text" className={css.formInputs} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/><br/><br/>
                 <input type="email" className={css.formInputs} placeholder="Email" onChange={(e) => setEmailSignup(e.target.value)}/><br/><br/>
                 <div className={css.passwordDiv}>
-                    <input type={signupPasswordtype} className={css.passwordInput} placeholder="Password" onChange={(e) => setPasswordSignup(e.target.value)} ref={signupPass}/>
+                    <input type={signupPasswordtype} className={css.passwordInput} placeholder="Password" onChange={(e) => setPasswordSignup(e.target.value)}/>
                     <p className={css.show} onClick={()=>{showsignupPassword()}}>{showsignup}</p>
                 </div><br/><br/>
                 <button className={css.formBtns} onClick={handleSignUp} >{signupbtnTxt}</button>
