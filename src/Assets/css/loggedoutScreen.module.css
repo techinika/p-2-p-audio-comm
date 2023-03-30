@@ -210,6 +210,136 @@
     display: none;
     font-size: 0px;
 }
+.popups{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 2;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.61);
+    width: 100%;
+    height: 100vh;
+}
+.signupDiv{
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.loginDiv{
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.formBtns{
+    background-color: #0088FF;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 28px 10px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    width: 100%;
+}
+.formInputs{
+    width: 280px;
+    height: 40px;
+    padding-left: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.274);
+}
+/* .formInputs:focus{
+    border: 2px solid #0088ff81;
+} */
+.formTitle{
+    font-size: 20px;
+    font-weight: 500;
+}
+.fromHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+.closeIcon{
+    display: block;
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+    width: 13px;
+    height: 13px;
+    background-image: url(../images/Icons/close.png);
+}
+.bottomInfo{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+.bluetxt{
+    color: #0088FF;
+    cursor: pointer;
+}
+.passwordDiv{
+    display: flex;
+    align-items: center;
+    width: 280px;
+    height: 40px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    padding-left: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.274);
+}
+.passwordInput{
+    height: 30px;
+    width: 220px;
+    border: none;
+    font-size: 14px;
+}
+.show{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 40px;
+    width: 60px;
+}
+.hiddenPopup{
+    display: none;
+    visibility: hidden;
+}
+.hiddenLogin{
+    display: none;
+    visibility: hidden;
+}
+.hiddenSignup{
+    display: none;
+    visibility: hidden;
+}
+.errorDiv{
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    background-color: rgb(255, 52, 52);
+    width: 324px;
+    color: white;
+    border-radius: 10px;
+    height: 40px;
+    margin-top: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.errorDivhidden{
+    display: none;
+    visibility: hidden;
+}
 @media only screen and (max-width: 1206px) {
     .right{
         display: none;
