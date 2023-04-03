@@ -3,28 +3,20 @@ import LoadingScreen from "./Loading";
 import ShortUniqueId from "short-unique-id";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function Home(){
     const { user, logOut } = useUserAuth();
-    const handleLogout = async () => {
-        try{
-            await logOut();
-        }
-        catch(error){
-            alert(error.message)
-        }
-    }
-    const servers = {
-        iceServers: [
-            {
-                urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
-            }
-        ],
-        iceCandidatePollSize: 10,
-    }
-    let peerConn = new RTCPeerConnection(servers);
+    const navigation = useNavigate();
+    // const handleLogout = async () => {
+    //     try{
+    //         await logOut();
+    //     }
+    //     catch(error){
+    //         alert(error.message)
+    //     }
+    // }
     const startRoom = async () => {
-        // Creating a UUID
         const shortUUID = new ShortUniqueId({ length: 16 });
         function addHyphen(str) {
             const regex = /(.{4})/g;
@@ -32,26 +24,11 @@ export default function Home(){
             return result.replace(/-$/, "");
         }
         const uuid = addHyphen(shortUUID());
-
-        // Creating offer and adding it to the rooms collection
-        const offerDescription = await peerConn.createOffer();
-        const offer = {
-            sdp: offerDescription.sdp,
-            type: offerDescription.type
-        }
-        await setDoc(doc(db, "rooms", uuid), { offer });
-        console.log(`Created room with code: ${uuid}`)
-
-        //Getting caller iceCandidates
-        peerConn.onicecandidate = event => {
-            const availablecand = event.candidate;
-            const newCityRef = doc(collection(db, "rooms", uuid));
-            const setice = async ()=>{   
-                await setDoc(newCityRef, availablecand.toJSON());
-            }
-            setice();
-        }
-        await peerConn.setLocalDescription(offerDescription);
+        await setDoc(doc(db, "rooms", uuid), { 
+            Host: user.displayName
+        });
+        // console.log(`${user.displayName} created chatroom with id ${uuid}`);
+        navigation(`/${uuid}`)
     }
     if(user == null){
         return <LoadingScreen/>
@@ -60,7 +37,7 @@ export default function Home(){
         <>
         <h1>welcome {user.displayName}</h1>
         <button onClick={()=>{startRoom()}}>Start room</button>
-        <button onClick={handleLogout}>Logout</button>
+        {/* <button onClick={handleLogout}>Logout</button> */}
         </>
     );
 }
