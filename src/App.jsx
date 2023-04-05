@@ -3,7 +3,7 @@ import { AuthContextProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import Index from "./Pages";
 import Home from "./Pages/Home";
-// import Room from "./Pages/room";
+import Room from "./Pages/room";
 import Decoy from "./Pages/decoy";
 function App() {
   return (
@@ -16,11 +16,7 @@ function App() {
             <Home/>
           </ProtectedRoute>}
         ></Route>
-        <Route path="/:roomID" element={
-          <ProtectedRoute>
-            <Decoy/>
-          </ProtectedRoute>}
-        ></Route>
+        <Route path="/:roomID" element={<Room/>}></Route>
       </Routes>
     </AuthContextProvider>
     </>
