@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
-import css from '../Assets/css/loggedoutScreen.module.css';
+import css from '../Assets/css/joinScreen.module.css';
 import Logo from "../Components/logo";
 import BeatLoader from "react-spinners/BeatLoader";
 
