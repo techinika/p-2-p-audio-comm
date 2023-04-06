@@ -9,8 +9,6 @@ export default function Room(){
     let remotestream;
     let localvid = useRef();
     let remotevid = useRef();
-    let firstfield = useRef();
-    let secondfield = useRef();
     let params = useParams();
     let roomid = params.roomID;
     let servers = {
@@ -44,24 +42,22 @@ export default function Room(){
                     pc.onicecandidate = async (event) => {
                         if(event.candidate){
                             let fieldata = JSON.stringify(pc.localDescription)
-                            firstfield.current.value = fieldata
                             const pushedOffer = {
                                 offer: fieldata
                             }
                             await setDoc(doc(db, "rooms", roomid), { pushedOffer }, { merge: true });
-                            alert("Offer created")
+                            console.log("Offer created")
                         }
                     }
                     let offer = await pc.createOffer()
                     await pc.setLocalDescription(offer)
-                    let fieldata = JSON.stringify(offer)
-                    firstfield.current.value = fieldata
+                    // let fieldata = JSON.stringify(offer)
 
                     onSnapshot(roomRef, (querySnapshot) => {
-                        alert("New data")
+                        console.log("New data")
                         console.log(querySnapshot.data())      
                         let answer = querySnapshot.data().pushedAnswer
-                        if(!answer) return alert('please eneter an answer')
+                        if(!answer) return console.log('please eneter an answer')
                         answer = JSON.parse(answer.answer)
                         if (!pc.currentRemoteDescription) {
                             // console.log(answer)
@@ -89,7 +85,6 @@ export default function Room(){
                     pc.onicecandidate = async (event) => {
                         if(event.candidate){
                             let fielddata = JSON.stringify(pc.localDescription)
-                            secondfield.current.value = fielddata
                             const pushedAnswer = { 
                                 answer: fielddata
                             }
@@ -102,8 +97,7 @@ export default function Room(){
                     await pc.setRemoteDescription(offer)
                     let answer = await pc.createAnswer()
                     await pc.setLocalDescription(answer)
-                    let fielddata = JSON.stringify(answer)
-                    secondfield.current.value = fielddata
+                    // let fielddata = JSON.stringify(answer)
                 }
                 creatingAnswer();
             }
@@ -111,26 +105,12 @@ export default function Room(){
             alert("please double check the room id")
         }
     }
-    let addAnswer = async () => {
-        let answer = secondfield.current.value
-        if(!answer) return alert('please eneter an answer')
-        answer = JSON.parse(answer)
-        if (!pc.currentRemoteDescription) {
-            pc.setRemoteDescription(answer)
-        }
-    }
-
     start();
     return(
         <>
         <div className={css.vidcont}>
             <video ref={localvid} autoplay="true" className={css.vids}></video>
             <video ref={remotevid} autoplay="true" className={css.vids}></video>
-        </div>
-        <div className={css.cont}>
-            <textarea ref={firstfield}></textarea>
-            <textarea ref={secondfield}></textarea>
-            <button onClick={()=> {addAnswer()}}>Add answer</button>
         </div>
         </>
     );
