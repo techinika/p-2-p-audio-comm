@@ -6,6 +6,7 @@ import { db } from "../firebase";
 import css from '../Assets/css/joinScreen.module.css';
 import Logo from "../Components/logo";
 import BeatLoader from "react-spinners/BeatLoader";
+import Popup from "../Components/Popup";
 
 export default function Index(){
     const [firstname, setFirstname] = useState("");
@@ -22,10 +23,16 @@ export default function Index(){
     const [signupPasswordtype, setsignupPasswordtype] = useState('password');
     const [showlogin, setShowlogin] = useState('Show');
     const [loginPasswordtype, setloginPasswordtype] = useState('password');
-    const [errormsg, setErrormsg] = useState('Something went wrong try again');
+    const [errormsgforms, setErrormsgforms] = useState('Something went wrong try again');
     const [errorDiv, setErrordiv] = useState(css.errorDivhidden);
     const [signupbtnTxt, setSignupbtnTxt] = useState('Sign up');
     const [loginbtnTxt, setLoginbtnTxt] = useState('Log in');
+    
+    const [roomId, setRoomId] = useState(null);
+    const [errorcolor, setErrorcolor] = useState(null);
+    const [errormsg, setErrormsg] = useState(null);
+    const [popupstate, setPopupstate] = useState(false);
+
     const { signUp } = useUserAuth();
     const { logIn } = useUserAuth();
     const navigation = useNavigate();
@@ -37,7 +44,7 @@ export default function Index(){
                 const usernameState = await getDoc(usersnameRef);
                 if (usernameState.exists()) {   
                     setErrordiv(css.errorDiv);
-                    setErrormsg('Username is taken')
+                    setErrormsgforms('Username is taken')
                     setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000);
                 } else {
                     setSignupbtnTxt(<BeatLoader color={"#ffffff"}size={7}/>);
@@ -55,18 +62,18 @@ export default function Index(){
                 setErrordiv(css.errorDiv);
                 setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000);
                 if (error.message == "Firebase: Error (auth/invalid-email).") {  
-                    setErrormsg('Provide a valid email');
+                    setErrormsgforms('Provide a valid email');
                 } else if(error.message == "Firebase: Password should be at least 6 characters (auth/weak-password)."){
-                    setErrormsg('Password should be at least 6 characters');
+                    setErrormsgforms('Password should be at least 6 characters');
                 } else if(error.message == "Firebase: Error (auth/email-already-in-use)."){
-                    setErrormsg('Email is already in use');
+                    setErrormsgforms('Email is already in use');
                 }else{
-                    setErrormsg(error.message);
+                    setErrormsgforms(error.message);
                 }
             }
         } else{
             setErrordiv(css.errorDiv);
-            setErrormsg('Fill in all fields')
+            setErrormsgforms('Fill in all fields')
             setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000);
         }
     }
@@ -83,19 +90,19 @@ export default function Index(){
                 setErrordiv(css.errorDiv);
                 setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000);
                 if (error.message == "Firebase: Error (auth/invalid-email).") {  
-                    setErrormsg('Provide a valid email');
+                    setErrormsgforms('Provide a valid email');
                 } else if(error.message == "Firebase: Error (auth/user-not-found)."){
-                    setErrormsg('User not found');
+                    setErrormsgforms('User not found');
                 } else if(error.message == "Firebase: Error (auth/wrong-password)."){
-                    setErrormsg('Wrong password');
+                    setErrormsgforms('Wrong password');
                 }else{
-                    setErrormsg(error.message);
+                    setErrormsgforms(error.message);
                 }
             }
         }else{ 
             setErrordiv(css.errorDiv);
             setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000); 
-            setErrormsg('Fill in all fields');
+            setErrormsgforms('Fill in all fields');
         }
     }
     function closePopup(){
@@ -127,12 +134,32 @@ export default function Index(){
         showlogin == 'Show' ? setShowlogin('Hide') : setShowlogin('Show');
         loginPasswordtype == 'password' ? setloginPasswordtype('text') : setloginPasswordtype('password')
     }
+    const joinbyID = async () => {
+        if (roomId.split("").length == 19) {
+            const roomRef = doc(db, "rooms", roomId);
+            const roomState = await getDoc(roomRef);
+            if (roomState.exists()) {
+                navigation(`/avatar/${roomId}`)
+            }else{
+                popup("red", "Double-check Room ID")
+            }
+        }else{
+            popup("red", "This is an invalid Room ID")
+        }
+    }
+    function popup(color,msg){
+        setErrorcolor(color);
+        setErrormsg(msg);
+        setPopupstate(true);
+        setTimeout(()=>{setPopupstate(false)},5000);
+    }
     return(
         <>
+        <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
         {/* Popups */}
         <div className={popupState}>  
             <div className={errorDiv}>
-                <p>{errormsg}</p>
+                <p>{errormsgforms}</p>
             </div>
             {/* Signup form */}
             <div className={signupState}>
@@ -191,11 +218,16 @@ export default function Index(){
                     <div className={css.controlsDiv}>   
                         <button className={css.createaccBtn} onClick={()=>{showSignup()}}>Create account</button>
                         <div className={css.formdiv}>
-                            <input type="text" placeholder="Enter Room ID to join as guest" className={css.linkinput}/>
-                            <button className={css.joinbtn}>
-                                <div className={css.joinicon}/>
+                            <input type="text" 
+                                placeholder="Enter Room ID to join without Sign up" 
+                                className={css.linkinput}
+                                onChange={(e) => setRoomId(e.target.value)}
+                            />
+                            <button className={css.joinbtn} onClick={()=>{joinbyID()}}>
+                            <div className={css.joinicon}/>
                             </button>
                         </div>
+
                     </div>
                 </div>
                 <div className={css.right}>
