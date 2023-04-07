@@ -6,6 +6,7 @@ import Decoy from "./Pages/decoy";
 import Index from "./Pages/Index";
 import Room from "./Pages/Room";
 import Account from "./Pages/Account";
+import Avatar from "./Pages/Avatar";
 function App() {
   return (
     <>
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>}></Route>
         <Route path="/join" element={<Index/>}></Route>
         <Route path="/u/:username" element={<ProtectedRoute><Account/></ProtectedRoute>}></Route>
+        <Route path="/avatar/:roomID" element={<Avatar/>}></Route>
         <Route path="/:roomID" element={<Room/>}></Route>
       </Routes>
     </AuthContextProvider>
