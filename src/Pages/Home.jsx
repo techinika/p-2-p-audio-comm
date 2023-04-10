@@ -5,7 +5,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import Header from "../Components/header";
-import displayImage from "../Assets/images/Images/displayImage.jpg";
+import displayImage from "../Assets/images/Images/default_dp.jpg";
 import css from "../Assets/css/homScreen.module.css"
 import { useState } from "react";
 import { SyncLoader } from "react-spinners";
@@ -55,6 +55,7 @@ export default function Home(){
     if(user == null){
         return <LoadingScreen/>
     }
+    console.log(user)
     return(
         <>
         <body>
@@ -63,7 +64,7 @@ export default function Home(){
             <p className={css.loadingtxt}>Joining</p>
             <SyncLoader color={"#ffffff"}size={5}/>
         </div>
-        <Header username={user.displayName} displayImage={displayImage}/>
+        <Header username={user.displayName} displayImage={user.photoURL==null ? displayImage : user.photoURL}/>
         <div className={css.mainContent}>
             <p className={css.title}>What's on your mind?</p>
             <p className={css.description}>
