@@ -1,8 +1,12 @@
-import { useRef } from 'react';
-import css from '../Assets/css/test.module.css'
+import { useRef, useState } from 'react';
+import css from '../Assets/css/roomScreen.module.css'
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
+import displayImage from "../Assets/images/Images/default_dp.jpg";
 import { doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
+import { useUserAuth } from '../Context/AuthContext';
+import Header from '../Components/header';
+import Popup from '../Components/Popup';
 export default function Room(){
     let pc;
     let localstream;
@@ -10,6 +14,10 @@ export default function Room(){
     let localvid = useRef();
     let remotevid = useRef();
     let params = useParams();
+    const { user } = useUserAuth();
+    const [errorcolor, setErrorcolor] = useState(null);
+    const [errormsg, setErrormsg] = useState(null);
+    const [popupstate, setPopupstate] = useState(false);
     let roomid = params.roomID;
     let servers = {
         iceServers: [
@@ -26,7 +34,7 @@ export default function Room(){
             let data = roomState.data();
             if (!data.pushedOffer) {
                 let creatingOffer = async () => {
-                    localstream = await navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
+                    localstream = await navigator.mediaDevices.getUserMedia({audio: true})
                     localvid.current.srcObject = localstream;
                     pc = new RTCPeerConnection();
                     remotestream = new MediaStream()
@@ -43,7 +51,9 @@ export default function Room(){
                         if(event.candidate){
                             let fieldata = JSON.stringify(pc.localDescription)
                             const pushedOffer = {
-                                offer: fieldata
+                                offer: fieldata,
+                                username:  user.displayName,
+                                displayImg: user.photoURL,
                             }
                             await setDoc(doc(db, "rooms", roomid), { pushedOffer }, { merge: true });
                             console.log("Offer created")
@@ -68,36 +78,57 @@ export default function Room(){
                 creatingOffer()
             }else{
                 let creatingAnswer = async () => {
-                    // console.log(data)
-                    localstream = await navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
-                    localvid.current.srcObject = localstream;
-                    pc = new RTCPeerConnection();
-                    remotestream = new MediaStream()
-                    remotevid.current.srcObject = remotestream
-                    localstream.getTracks().forEach((track) => {
-                        pc.addTrack(track, localstream)
-                    });
-                    pc.ontrack = async (event) => {
-                        event.streams[0].getTracks().forEach((track) => {
-                            remotestream.addTrack(track)
-                        })
-                    }
-                    pc.onicecandidate = async (event) => {
-                        if(event.candidate){
-                            let fielddata = JSON.stringify(pc.localDescription)
-                            const pushedAnswer = { 
-                                answer: fielddata
-                            }
-                            await setDoc(doc(db, "rooms", roomid), { pushedAnswer }, { merge: true });
-                            alert("Answer created")
+                    console.log(data)
+                if (!data.pushedAnswer) {
+                    if (data.Host == user.displayName) {
+                        console.log("you cant join your own room twice")
+                    }else{
+                        localstream = await navigator.mediaDevices.getUserMedia({video: false, audio: true})
+                        localvid.current.srcObject = localstream;
+                        pc = new RTCPeerConnection();
+                        remotestream = new MediaStream()
+                        remotevid.current.srcObject = remotestream
+                        localstream.getTracks().forEach((track) => {
+                            pc.addTrack(track, localstream)
+                        });
+                        pc.ontrack = async (event) => {
+                            event.streams[0].getTracks().forEach((track) => {
+                                remotestream.addTrack(track)
+                            })
                         }
+                        pc.onicecandidate = async (event) => {
+                            if(event.candidate){
+                                let fielddata = JSON.stringify(pc.localDescription)
+                                if (!user) {
+                                    const pushedAnswer = { 
+                                        answer: fielddata,
+                                        username: localStorage.getItem('username'),
+                                        displayImg: localStorage.getItem('avatar'),
+                                        logstate: false
+                                    }
+                                    await setDoc(doc(db, "rooms", roomid), { pushedAnswer }, { merge: true });
+                                }else if(user){
+                                    const pushedAnswer = { 
+                                        answer: fielddata,
+                                        username: user.displayName,
+                                        displayImg: user.photoURL,
+                                        logstate: true
+                                    }
+                                    await setDoc(doc(db, "rooms", roomid), { pushedAnswer }, { merge: true });
+                                }
+                                alert("Answer created")
+                            }
+                        }
+                    
+                        let offer = JSON.parse(data.pushedOffer.offer)
+                        await pc.setRemoteDescription(offer)
+                        let answer = await pc.createAnswer()
+                        await pc.setLocalDescription(answer)
+                        // let fielddata = JSON.stringify(answer)
                     }
-            
-                    let offer = JSON.parse(data.pushedOffer.offer)
-                    await pc.setRemoteDescription(offer)
-                    let answer = await pc.createAnswer()
-                    await pc.setLocalDescription(answer)
-                    // let fielddata = JSON.stringify(answer)
+                }else{
+                    console.log("answer already exists")
+                }
                 }
                 creatingAnswer();
             }
@@ -105,12 +136,71 @@ export default function Room(){
             alert("please double check the room id")
         }
     }
+    function copyid(){
+        navigator.clipboard.writeText(roomid);
+        popup("blue", "RoomID Copied")
+    }
+    function popup(color,msg){
+        setErrorcolor(color);
+        setErrormsg(msg);
+        setPopupstate(true);
+        setTimeout(()=>{setPopupstate(false)},5000);
+    }
     start();
     return(
         <>
-        <div className={css.vidcont}>
+        {/* <div className={css.vidcont}>
             <video ref={localvid} autoplay="true" className={css.vids}></video>
             <video ref={remotevid} autoplay="true" className={css.vids}></video>
+        </div> */}
+        <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
+        <div className={css.container}>
+            {/* <Header username={user.displayName} displayImage={user.photoURL==null ? displayImage : user.photoURL}/> */}
+            <div className={css.content}>  
+                <div className={css.speaker}>
+                    <div className={css.top}>
+                        {/* <p className={css.username}>You</p> */}
+                        <div className={css.smallmiccont}>
+                            <div className={css.smallmic}/>
+                        </div>
+                    </div>
+                    <div className={css.center}>
+                        <audio src="" ref={localvid}></audio>
+                        <audio src="" ref={remotevid}></audio>
+                        <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
+                    </div>
+                    <div className={css.bottom}>
+                        <p className={css.username}>You</p>
+                    </div>
+                </div>
+                <div className={css.sidepanel}>
+                    <p className={css.title}>Room Details</p>
+                    <br />
+                    {/* <p>Joining info</p> */}
+                    <p className={css.description}>Share Room-Id with other's you want to join</p>
+                    <div className={css.roomdiv}>
+                        <p>{roomid}</p>
+                        <div className={css.copyicon} onClick={()=>{copyid()}}/>
+                    </div>
+                </div>
+            </div>
+            <div className={css.controls}>
+                <div className={css.centercontrols}>
+                    <div className={css.iconcontainer}>
+                        <div className={css.microphone}/>
+                    </div>
+                    <div className={css.iconcontainer}>
+                        <div className={css.present}/>
+                    </div>
+                    <div className={css.iconcontainer}>
+                        <div className={css.chat}/>
+                    </div>
+                    <div className={css.iconcontainer}>
+                        <div className={css.info}/>
+                    </div>
+                    <div className={css.leaveroom}>Leave Room</div>
+                </div>
+            </div>
         </div>
         </>
     );
