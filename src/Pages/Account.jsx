@@ -38,12 +38,12 @@ export default function Account(){
               )
         });
     }
-    const params = useParams();
-    let username = params.username
+    // const params = useParams();
+    // let username = params.username
     return(
         <>
         <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.displayImage} id="displayImg"/>
-        <h1>{username}</h1>
+        <h1>{user.displayName}</h1>
         <input type="file" accept="image/jpeg, image/png, image/jpg" onChange={()=>{displayImgchange()}} id="inputfile"/>
         <button onClick={()=>{uploadimg()}}>Upload image</button>
         <br /><br />
