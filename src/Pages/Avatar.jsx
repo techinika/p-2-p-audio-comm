@@ -2,8 +2,11 @@ import { useState } from "react";
 import css from "../Assets/css/Avatar.module.css"
 import Popup from "../Components/Popup";
 import { SyncLoader } from "react-spinners";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Avatar(){
+    let params = useParams();
+    const navigation = useNavigate();
     const [emoji, setEmoji] = useState("😎");
     const [theme, setTheme] = useState("#FFE4AF");
     const [name, setName] = useState("");
@@ -12,6 +15,8 @@ export default function Avatar(){
     const [errorcolor, setErrorcolor] = useState(null);
     const [errormsg, setErrormsg] = useState(null);
     const [popupstate, setPopupstate] = useState(false);
+    let roomid = params.roomID;
+
     function settheTheme(e){
         setTheme(e.target.value)
     }
@@ -22,7 +27,11 @@ export default function Avatar(){
         if (name == "") {
             popup("red", "Please enter a name")
         }else{
-            setJoining(true)
+            setJoining(true);
+            const avatar = emoji+theme;
+            localStorage.setItem("username", name);
+            localStorage.setItem("avatar", avatar);
+            navigation(`/${roomid}`)
         }
     }
     function hideNotification(){
