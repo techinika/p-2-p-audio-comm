@@ -42,6 +42,7 @@
     flex-direction: column;
     justify-content: space-between;
     background-color: #3C4043;
+    position: relative;
     /* box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px; */
 }
 .sidepanel{
@@ -168,4 +169,44 @@
     height: 15px;
     background-size: cover;
     background-image: url(../images/Icons/microphone.png);
+}
+.smallspeaker{
+    background-color: #4A4E51;
+    padding: 20px 40px 10px 40px;
+    border-radius: 10px;
+    margin: 15px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    right: 0;
+    bottom: 0;
+}
+.bottom{
+    display: flex;
+    justify-content: space-between;
+}
+.smalluserImg{
+    width: 80px;
+    height: 80px;
+    border-radius: 80px; 
+}
+.you{
+    font-size: 14px;
+    font-weight: 500;
+    color: rgb(255, 255, 255);
+    width: fit-content;
+    bottom: 0;
+    margin-top: 5px;
+}
+
+@media only screen and (max-width: 985px) {
+.sidepanel{
+    display: none;
+    visibility: hidden;
+}
+.speaker{
+    width: 95%;
+}
 }

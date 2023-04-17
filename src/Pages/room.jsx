@@ -5,7 +5,6 @@ import { db } from '../firebase';
 import displayImage from "../Assets/images/Images/default_dp.jpg";
 import { doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useUserAuth } from '../Context/AuthContext';
-import Header from '../Components/header';
 import Popup from '../Components/Popup';
 export default function Room(){
     let pc;
@@ -18,6 +17,23 @@ export default function Room(){
     const [errorcolor, setErrorcolor] = useState(null);
     const [errormsg, setErrormsg] = useState(null);
     const [popupstate, setPopupstate] = useState(false);
+    const [speaker, setSpeaker] = useState(
+        <div className={css.speaker}>
+               <div className={css.top}>
+                   <div className={css.smallmiccont}>
+                       <div className={css.smallmic}/>
+                   </div>
+               </div>
+               <div className={css.center}>
+                   <audio src="" ref={localvid}></audio>
+                   <audio src="" ref={remotevid}></audio>
+                   <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
+               </div>
+               <div className={css.bottom}>
+                   <p className={css.username}>{user.displayName}</p>
+               </div>
+           </div>
+   );
     let roomid = params.roomID;
     let servers = {
         iceServers: [
@@ -70,8 +86,29 @@ export default function Room(){
                         if(!answer) return console.log('please eneter an answer')
                         answer = JSON.parse(answer.answer)
                         if (!pc.currentRemoteDescription) {
-                            // console.log(answer)
+                            
                             pc.setRemoteDescription(answer)
+                            setSpeaker(
+                                <div className={css.speaker}>
+                                <div className={css.top}>
+                                    <div className={css.smallmiccont}>
+                                        <div className={css.smallmic}/>
+                                    </div>
+                                </div>
+                                <div className={css.center}>
+                                    <audio src="" ref={localvid}></audio>
+                                    <audio src="" ref={remotevid}></audio>
+                                    <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
+                                </div>
+                                <div className={css.bottom}>
+                                    <p className={css.username}>{user.displayName}</p>
+                                    <div className={css.smallspeaker}>
+                                        <img src={!user.photoURL ? displayImage : user.photoURL} className={css.smalluserImg}/>
+                                        <p className={css.you}>You</p>
+                                    </div>
+                                </div>
+                            </div>
+                            )
                         }
                     });
                 }
@@ -83,6 +120,7 @@ export default function Room(){
                     if (data.Host == user.displayName) {
                         console.log("you cant join your own room twice")
                     }else{
+                        console.log(user.displayName)
                         localstream = await navigator.mediaDevices.getUserMedia({video: false, audio: true})
                         localvid.current.srcObject = localstream;
                         pc = new RTCPeerConnection();
@@ -116,10 +154,31 @@ export default function Room(){
                                     }
                                     await setDoc(doc(db, "rooms", roomid), { pushedAnswer }, { merge: true });
                                 }
-                                alert("Answer created")
+                                // alert("Answer created")
                             }
                         }
-                    
+                        
+                        // setSpeaker(
+                        //     <div className={css.speaker}>
+                        //     <div className={css.top}>
+                        //         <div className={css.smallmiccont}>
+                        //             <div className={css.smallmic}/>
+                        //         </div>
+                        //     </div>
+                        //     <div className={css.center}>
+                        //         <audio src="" ref={localvid}></audio>
+                        //         <audio src="" ref={remotevid}></audio>
+                        //         <img src={data.pushedOffer.displayImg == null ? displayImage : data.pushedOffer.displayImg} className={css.userImage}/>
+                        //     </div>
+                        //     <div className={css.bottom}>
+                        //         <p className={css.username}>{data.pushedOffer.username}</p>
+                        //         <div className={css.smallspeaker}>
+                        //             <img src={!user.photoURL ? displayImage : user.photoURL} className={css.smalluserImg}/>
+                        //             <p className={css.you}>You</p>
+                        //         </div>
+                        //     </div>
+                        // </div>
+                        // )
                         let offer = JSON.parse(data.pushedOffer.offer)
                         await pc.setRemoteDescription(offer)
                         let answer = await pc.createAnswer()
@@ -146,37 +205,62 @@ export default function Room(){
         setPopupstate(true);
         setTimeout(()=>{setPopupstate(false)},5000);
     }
+    // const speakerstate = async () => {
+    //     const roomRef = doc(db, "rooms", roomid);
+    //     const roomState = await getDoc(roomRef);
+    //     let data = roomState.data();
+    //     if(!data.pushedAnswer){
+    //         setSpeaker(
+    //              <div className={css.speaker}>
+    //                     <div className={css.top}>
+    //                         <div className={css.smallmiccont}>
+    //                             <div className={css.smallmic}/>
+    //                         </div>
+    //                     </div>
+    //                     <div className={css.center}>
+    //                         <audio src="" ref={localvid}></audio>
+    //                         <audio src="" ref={remotevid}></audio>
+    //                         <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
+    //                     </div>
+    //                     <div className={css.bottom}>
+    //                         <p className={css.username}>{user.displayName}</p>
+    //                     </div>
+    //                 </div>
+    //         )
+    //     }else{
+    //     setSpeaker(
+    //         <div className={css.speaker}>
+    //         <div className={css.top}>
+    //             <div className={css.smallmiccont}>
+    //                 <div className={css.smallmic}/>
+    //             </div>
+    //         </div>
+    //         <div className={css.center}>
+    //             <audio src="" ref={localvid}></audio>
+    //             <audio src="" ref={remotevid}></audio>
+    //             <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
+    //         </div>
+    //         <div className={css.bottom}>
+    //             <p className={css.username}>{user.displayName}</p>
+    //             <div className={css.smallspeaker}>
+    //                 <img src={!user.photoURL ? displayImage : user.photoURL} className={css.smalluserImg}/>
+    //                 <p className={css.you}>You</p>
+    //             </div>
+    //         </div>
+    //     </div>
+    //     )
+    //     }
+    // }
+    // speakerstate();
     start();
     return(
         <>
-        {/* <div className={css.vidcont}>
-            <video ref={localvid} autoplay="true" className={css.vids}></video>
-            <video ref={remotevid} autoplay="true" className={css.vids}></video>
-        </div> */}
-        <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
-        <div className={css.container}>
-            {/* <Header username={user.displayName} displayImage={user.photoURL==null ? displayImage : user.photoURL}/> */}
-            <div className={css.content}>  
-                <div className={css.speaker}>
-                    <div className={css.top}>
-                        {/* <p className={css.username}>You</p> */}
-                        <div className={css.smallmiccont}>
-                            <div className={css.smallmic}/>
-                        </div>
-                    </div>
-                    <div className={css.center}>
-                        <audio src="" ref={localvid}></audio>
-                        <audio src="" ref={remotevid}></audio>
-                        <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
-                    </div>
-                    <div className={css.bottom}>
-                        <p className={css.username}>You</p>
-                    </div>
-                </div>
+        <div className={css.container}><div className={css.content}>
+                {speaker} 
+                <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
                 <div className={css.sidepanel}>
                     <p className={css.title}>Room Details</p>
                     <br />
-                    {/* <p>Joining info</p> */}
                     <p className={css.description}>Share Room-Id with other's you want to join</p>
                     <div className={css.roomdiv}>
                         <p>{roomid}</p>
