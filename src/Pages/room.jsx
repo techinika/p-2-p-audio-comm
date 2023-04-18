@@ -33,7 +33,7 @@ export default function Room(){
                    <p className={css.username}>{user.displayName}</p>
                </div>
            </div>
-   );
+    );
     let roomid = params.roomID;
     let servers = {
         iceServers: [
@@ -48,6 +48,7 @@ export default function Room(){
         const roomState = await getDoc(roomRef);
         if (roomState.exists()) {
             let data = roomState.data();
+            console.log(data.pushedOffer)
             if (!data.pushedOffer) {
                 let creatingOffer = async () => {
                     localstream = await navigator.mediaDevices.getUserMedia({audio: true})
@@ -72,7 +73,7 @@ export default function Room(){
                                 displayImg: user.photoURL,
                             }
                             await setDoc(doc(db, "rooms", roomid), { pushedOffer }, { merge: true });
-                            console.log("Offer created")
+                            console.log("creating offer")
                         }
                     }
                     let offer = await pc.createOffer()
@@ -84,10 +85,10 @@ export default function Room(){
                         console.log(querySnapshot.data())      
                         let answer = querySnapshot.data().pushedAnswer
                         if(!answer) return console.log('please eneter an answer')
-                        answer = JSON.parse(answer.answer)
+                        let theanswer = JSON.parse(answer.answer)
                         if (!pc.currentRemoteDescription) {
                             
-                            pc.setRemoteDescription(answer)
+                            pc.setRemoteDescription(theanswer)
                             setSpeaker(
                                 <div className={css.speaker}>
                                 <div className={css.top}>
@@ -98,10 +99,10 @@ export default function Room(){
                                 <div className={css.center}>
                                     <audio src="" ref={localvid}></audio>
                                     <audio src="" ref={remotevid}></audio>
-                                    <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.userImage}/>
+                                    <img src={answer.displayImg==null ? displayImage : answer.displayImg} className={css.userImage}/>
                                 </div>
                                 <div className={css.bottom}>
-                                    <p className={css.username}>{user.displayName}</p>
+                                    <p className={css.username}>{answer.username}</p>
                                     <div className={css.smallspeaker}>
                                         <img src={!user.photoURL ? displayImage : user.photoURL} className={css.smalluserImg}/>
                                         <p className={css.you}>You</p>
@@ -115,12 +116,11 @@ export default function Room(){
                 creatingOffer()
             }else{
                 let creatingAnswer = async () => {
-                    console.log(data)
                 if (!data.pushedAnswer) {
                     if (data.Host == user.displayName) {
-                        console.log("you cant join your own room twice")
+                        // Do nothing this prevents creating answer when you are the Host
                     }else{
-                        console.log(user.displayName)
+                        // console.log(user.displayName)
                         localstream = await navigator.mediaDevices.getUserMedia({video: false, audio: true})
                         localvid.current.srcObject = localstream;
                         pc = new RTCPeerConnection();
@@ -154,31 +154,29 @@ export default function Room(){
                                     }
                                     await setDoc(doc(db, "rooms", roomid), { pushedAnswer }, { merge: true });
                                 }
-                                // alert("Answer created")
+                                setSpeaker(
+                                    <div className={css.speaker}>
+                                    <div className={css.top}>
+                                        <div className={css.smallmiccont}>
+                                            <div className={css.smallmic}/>
+                                        </div>
+                                    </div>
+                                    <div className={css.center}>
+                                        <audio src="" ref={localvid}></audio>
+                                        <audio src="" ref={remotevid}></audio>
+                                        <img src={data.pushedOffer.displayImg == null ? displayImage : data.pushedOffer.displayImg} className={css.userImage}/>
+                                    </div>
+                                    <div className={css.bottom}>
+                                        <p className={css.username}>{data.pushedOffer.username}</p>
+                                        <div className={css.smallspeaker}>
+                                            <img src={!user.photoURL ? displayImage : user.photoURL} className={css.smalluserImg}/>
+                                            <p className={css.you}>You</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                )
                             }
                         }
-                        
-                        // setSpeaker(
-                        //     <div className={css.speaker}>
-                        //     <div className={css.top}>
-                        //         <div className={css.smallmiccont}>
-                        //             <div className={css.smallmic}/>
-                        //         </div>
-                        //     </div>
-                        //     <div className={css.center}>
-                        //         <audio src="" ref={localvid}></audio>
-                        //         <audio src="" ref={remotevid}></audio>
-                        //         <img src={data.pushedOffer.displayImg == null ? displayImage : data.pushedOffer.displayImg} className={css.userImage}/>
-                        //     </div>
-                        //     <div className={css.bottom}>
-                        //         <p className={css.username}>{data.pushedOffer.username}</p>
-                        //         <div className={css.smallspeaker}>
-                        //             <img src={!user.photoURL ? displayImage : user.photoURL} className={css.smalluserImg}/>
-                        //             <p className={css.you}>You</p>
-                        //         </div>
-                        //     </div>
-                        // </div>
-                        // )
                         let offer = JSON.parse(data.pushedOffer.offer)
                         await pc.setRemoteDescription(offer)
                         let answer = await pc.createAnswer()
