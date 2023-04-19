@@ -5,6 +5,7 @@ import { SyncLoader } from "react-spinners";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Avatar(){
+    // Setting variables 
     let params = useParams();
     const navigation = useNavigate();
     const [emoji, setEmoji] = useState("😎");
@@ -17,12 +18,17 @@ export default function Avatar(){
     const [popupstate, setPopupstate] = useState(false);
     let roomid = params.roomID;
 
+    // settheTheme state on click 
     function settheTheme(e){
         setTheme(e.target.value)
     }
+
+    // setEmoji state on click 
     function settheEmoji(e){
         setEmoji(e.target.value)
     }
+
+    // Check if there is no name before setting localstorage and navigatinh to room
     function createAvatar(){
         if (name == "") {
             popup("red", "Please enter a name")
@@ -34,22 +40,32 @@ export default function Avatar(){
             navigation(`/${roomid}`)
         }
     }
+
+    // Hode notification when okay is clicked
     function hideNotification(){
         setNitification(false)
     }
+
+    // function for popup component
     function popup(color,msg){
         setErrorcolor(color);
         setErrormsg(msg);
         setPopupstate(true);
         setTimeout(()=>{setPopupstate(false)},5000);
     }
+    
     return(
         <>
+        {/* Joining overlay */}
         <div className={joining ? css.visible : css.hidden}>
             <p className={css.loadingtxt}>Joining</p>
             <SyncLoader color={"#ffffff"}size={5}/>
         </div>
+
+        {/* Popup component */}
         <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
+
+        {/* Notification on screenload  */}
         <div className={notification ? css.notificontainer : css.hiddennotification}>
             <div className={css.notification}>
                 <p className={css.notifTitle}>Create an avatar</p>
@@ -59,6 +75,8 @@ export default function Avatar(){
                 <button className={css.notifBtn} onClick={()=>{hideNotification()}}>OK</button>
             </div>
         </div>
+
+        {/* Body */}
         <div className={css.body}>
             <div className={css.container}>
                 <div className={css.top}>
@@ -68,6 +86,8 @@ export default function Avatar(){
                 <input type="text" placeholder="Input your name" className={css.form} onChange={(e) => setName(e.target.value)}/>
                 </div>
                 <br />
+
+                {/* Emoji Options  */}
                 <Emoji number="3" emoji="😎"/>
                 <Emoji number="5" emoji="😊"/>
                 <Emoji number="6" emoji="😍"/>
@@ -136,6 +156,8 @@ export default function Avatar(){
                 <Emoji number="89" emoji="😼"/>
                 <Emoji number="90" emoji="😈"/>
                 <br /><br /><br />
+
+                {/* Theme options  */}
                 <div className={css.themeContainer}>
                     <Theme number="color1" color="#FFE4AF"/>
                     <Theme number="color2" color="#93D7F5"/>
@@ -154,6 +176,7 @@ export default function Avatar(){
         </div>
         </>
     );
+    // components 
     function Emoji(props){
         return(
             <>  
@@ -171,11 +194,3 @@ export default function Avatar(){
         )
     }
 }
-{/* <p> 
-    😄😉😊😋😎😍🥰🙂🤗🤩🤔🫡🤨😐😑
-    😶🙄😏🤐😪🥱😴😌😛😜😒😕🙃🫠🤑
-    😞😤😨😩🤯😮‍💨😰😱🥵🥶😳🤪😠😡😷
-    🤒🤕😇🥳🥸🥺🥹🤠🤡🤥🧐🤓👽🤖🐶
-    🦊🐷🐯🦁🐱🐺🐭🐸🐼🐰🐻🐻‍❄️🐨🐔🦄
-    🦥🐠🦢🐧🦩🐣🐞🪲🦉🐳🐬🐽🐾😼😈
-</p> */}

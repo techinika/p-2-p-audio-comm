@@ -1,4 +1,3 @@
-import { useNavigate, useParams } from "react-router-dom";
 import { useUserAuth } from "../Context/AuthContext";
 import css from "../Assets/css/Account.module.css";
 import displayImage from "../Assets/images/Images/default_dp.jpg";
@@ -9,7 +8,7 @@ import { updateProfile } from "firebase/auth";
 
 export default function Account(){
     const { user, logOut } = useUserAuth();
-    // const navigation = useNavigate();
+    // Logout the user function
     const handleLogout = async () => {
         try{
             await logOut();
@@ -18,11 +17,15 @@ export default function Account(){
             alert(error.message)
         }
     }
+
+    // On image selection change to selected image
     function displayImgchange(){
         let image = document.getElementById("displayImg");
         let file = document.getElementById("inputfile");
         image.src = URL.createObjectURL(file.files[0])
     }
+
+    // Upload the selected image
     function uploadimg(){
         let file = document.getElementById("inputfile");
         const shortUUID = new ShortUniqueId({ length: 10 });
@@ -30,7 +33,6 @@ export default function Account(){
         uploadBytes(displayImgRef, file.files[0]).then((snapshot) => {
             return getDownloadURL(snapshot.ref)
         }).then(downloadURL => {
-            // console.log('Download URL', downloadURL)
               updateProfile(user, {
                 photoURL: downloadURL
               }).then(
@@ -38,18 +40,12 @@ export default function Account(){
               )
         });
     }
-    // const params = useParams();
-    // let username = params.username
     return(
         <>
         <img src={user.photoURL==null ? displayImage : user.photoURL} className={css.displayImage} id="displayImg"/>
         <h1>{user.displayName}</h1>
         <input type="file" accept="image/jpeg, image/png, image/jpg" onChange={()=>{displayImgchange()}} id="inputfile"/>
         <button onClick={()=>{uploadimg()}}>Upload image</button>
-        <br /><br />
-        <br /><br />
-        <br /><br />
-        <br /><br />
         <button onClick={handleLogout}>Logout</button>
         </>
     );

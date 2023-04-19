@@ -15,10 +15,12 @@ export function AuthContextProvider({ children }){
               })
         })
     }
+
     // Login function
     function logIn(email, password){
         return signInWithEmailAndPassword(auth, email, password);
     }
+
     // Set user 
     useEffect(() => {
         const listen = onAuthStateChanged(auth, (currentUser) => {
@@ -28,6 +30,7 @@ export function AuthContextProvider({ children }){
             listen();
         }
     },[]);
+
     // Logout 
     function logOut(){
         return signOut(auth);

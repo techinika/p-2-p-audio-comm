@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import { AuthContextProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import Home from "./Pages/Home";
-import Decoy from "./Pages/decoy";
 import Index from "./Pages/Index";
 import Room from "./Pages/Room";
 import Account from "./Pages/Account";

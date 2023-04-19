@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
@@ -9,6 +9,7 @@ import BeatLoader from "react-spinners/BeatLoader";
 import Popup from "../Components/Popup";
 
 export default function Index(){
+    // Setting variables 
     const [firstname, setFirstname] = useState("");
     const [secondname, setSecondname] = useState("");
     const [username, setUsername] = useState("");
@@ -27,26 +28,29 @@ export default function Index(){
     const [errorDiv, setErrordiv] = useState(css.errorDivhidden);
     const [signupbtnTxt, setSignupbtnTxt] = useState('Sign up');
     const [loginbtnTxt, setLoginbtnTxt] = useState('Log in');
-    
     const [roomId, setRoomId] = useState(null);
     const [errorcolor, setErrorcolor] = useState(null);
     const [errormsg, setErrormsg] = useState(null);
     const [popupstate, setPopupstate] = useState(false);
-
     const { signUp } = useUserAuth();
     const { logIn } = useUserAuth();
     const navigation = useNavigate();
+
+    // Signup a new user
     const handleSignUp = async (e) => {
         e.preventDefault();
+        // Checking if there is no empty fields
         if (firstname != "" && secondname != "" && username != "" && emailSignup != "" && passwordSignup != "") {
             try{
                 const usersnameRef = doc(db, "users", username);
                 const usernameState = await getDoc(usersnameRef);
+                // Checking if the username is taken
                 if (usernameState.exists()) {   
                     setErrordiv(css.errorDiv);
                     setErrormsgforms('Username is taken')
                     setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000);
                 } else {
+                    // if username isn't taken will show loading on btn and try signingup and adding username
                     setSignupbtnTxt(<BeatLoader color={"#ffffff"}size={7}/>);
                     await signUp(emailSignup, passwordSignup, username);
                     await setDoc(doc(db, "users", username), {
@@ -57,6 +61,7 @@ export default function Index(){
                     navigation("/")
                 }
             } 
+            // Error handling for signup
             catch(error) {
                 setSignupbtnTxt('Sign up');
                 setErrordiv(css.errorDiv);
@@ -71,20 +76,26 @@ export default function Index(){
                     setErrormsgforms(error.message);
                 }
             }
+            // This will run if a field is empty
         } else{
             setErrordiv(css.errorDiv);
             setErrormsgforms('Fill in all fields')
             setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000);
         }
     }
+
+    // Login the user
     const handleLogin = async (e) => {
         e.preventDefault();
+        // Checking if there is no empty fields
         if (emailLogin != "" && passwordLogin != "") {
+            // Try loging in the user
             try{
                 setLoginbtnTxt(<BeatLoader color={"#ffffff"}size={7}/>);
                 await logIn(emailLogin, passwordLogin);
                 navigation("/")
             } 
+            // Error catching for login
             catch(error) {  
                 setLoginbtnTxt('Log in');
                 setErrordiv(css.errorDiv);
@@ -99,17 +110,20 @@ export default function Index(){
                     setErrormsgforms(error.message);
                 }
             }
+            // Runs if there is an empty field
         }else{ 
             setErrordiv(css.errorDiv);
             setTimeout(()=>{setErrordiv(css.errorDivhidden)},5000); 
             setErrormsgforms('Fill in all fields');
         }
     }
+    // Closepop function
     function closePopup(){
         setpopupState(css.hiddenPopup);
         setLogin(css.hiddenLogin);
         setSignup(css.hiddenSignup);
     }
+    // Show signup overlay and login overlay function 
     function showSignup(){
         setpopupState(css.popups);
         setSignup(css.signupDiv)
@@ -118,14 +132,18 @@ export default function Index(){
         setpopupState(css.popups);
         setLogin(css.loginDiv)
     }
+
+    // Go from signup overlay to login overlay
     function gotologin(){
         setSignup(css.hiddenSignup);
         setLogin(css.loginDiv)
     }
+    // Go from login overlay to signup overlay
     function gotosignup(){
         setSignup(css.signupDiv);
         setLogin(css.hiddenLogin);
     }
+    // Show signup and login password function
     function showsignupPassword(){
         showsignup == 'Show' ? setShowsignup('Hide') : setShowsignup('Show');
         signupPasswordtype == 'password' ? setsignupPasswordtype('text') : setsignupPasswordtype('password')
@@ -134,6 +152,8 @@ export default function Index(){
         showlogin == 'Show' ? setShowlogin('Hide') : setShowlogin('Show');
         loginPasswordtype == 'password' ? setloginPasswordtype('text') : setloginPasswordtype('password')
     }
+
+    // joinbyID will verify whether the roomid is valid then if room exists before navigating to avatar
     const joinbyID = async () => {
         if (roomId.split("").length == 19) {
             const roomRef = doc(db, "rooms", roomId);
@@ -147,6 +167,8 @@ export default function Index(){
             popup("red", "This is an invalid Room ID")
         }
     }
+
+    // function for popup component
     function popup(color,msg){
         setErrorcolor(color);
         setErrormsg(msg);
@@ -155,50 +177,55 @@ export default function Index(){
     }
     return(
         <>
+        {/* Popup component */}
         <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
+
         {/* Popups */}
         <div className={popupState}>  
             <div className={errorDiv}>
-                <p>{errormsgforms}</p>
+            <p>{errormsgforms}</p>
+        </div>
+
+        {/* Signup form */}
+        <div className={signupState}>
+            <div className={css.fromHeader}>
+                <p className={css.formTitle}>Join us Today 😎</p>
+                <div className={css.closeIcon} onClick={()=>{closePopup()}}/>
             </div>
-            {/* Signup form */}
-            <div className={signupState}>
-                <div className={css.fromHeader}>
-                    <p className={css.formTitle}>Join us Today 😎</p>
-                    <div className={css.closeIcon} onClick={()=>{closePopup()}}/>
-                </div>
-                <input type="text" className={css.formInputs} placeholder="First name" onChange={(e) => setFirstname(e.target.value)}/><br/><br/>
-                <input type="text" className={css.formInputs} placeholder="Second name" onChange={(e) => setSecondname(e.target.value)}/><br/><br/>
-                <input type="text" className={css.formInputs} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/><br/><br/>
-                <input type="email" className={css.formInputs} placeholder="Email" onChange={(e) => setEmailSignup(e.target.value)}/><br/><br/>
-                <div className={css.passwordDiv}>
-                    <input type={signupPasswordtype} className={css.passwordInput} placeholder="Password" onChange={(e) => setPasswordSignup(e.target.value)}/>
-                    <p className={css.show} onClick={()=>{showsignupPassword()}}>{showsignup}</p>
-                </div><br/><br/>
-                <button className={css.formBtns} onClick={handleSignUp} >{signupbtnTxt}</button>
-                <div className={css.bottomInfo}>
-                    <p className={css.bottomTxt}>Already have an account? <span className={css.bluetxt} onClick={()=>{gotologin()}}>Log In</span></p>
-                </div>
+            <input type="text" className={css.formInputs} placeholder="First name" onChange={(e) => setFirstname(e.target.value)}/><br/><br/>
+            <input type="text" className={css.formInputs} placeholder="Second name" onChange={(e) => setSecondname(e.target.value)}/><br/><br/>
+            <input type="text" className={css.formInputs} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/><br/><br/>
+            <input type="email" className={css.formInputs} placeholder="Email" onChange={(e) => setEmailSignup(e.target.value)}/><br/><br/>
+            <div className={css.passwordDiv}>
+                <input type={signupPasswordtype} className={css.passwordInput} placeholder="Password" onChange={(e) => setPasswordSignup(e.target.value)}/>
+                <p className={css.show} onClick={()=>{showsignupPassword()}}>{showsignup}</p>
+            </div><br/><br/>
+            <button className={css.formBtns} onClick={handleSignUp} >{signupbtnTxt}</button>
+            <div className={css.bottomInfo}>
+                <p className={css.bottomTxt}>Already have an account? <span className={css.bluetxt} onClick={()=>{gotologin()}}>Log In</span></p>
             </div>
-            {/* Login form */}
-            <div className={loginState}>
-                <div className={css.fromHeader}>
-                    <p className={css.formTitle}>Welcome back</p>
-                    <div className={css.closeIcon} onClick={()=>{closePopup()}}/>
-                </div>
-                <input type="email" className={css.formInputs} placeholder="Email" onChange={(e) => setEmailLogin(e.target.value)}/><br/><br/>
-                <div className={css.passwordDiv}>
-                    <input type={loginPasswordtype} className={css.passwordInput} placeholder="Password" onChange={(e) => setPasswordLogin(e.target.value)}/><br/><br/>
-                    <p className={css.show} onClick={()=>{showloginPassword()}}>{showlogin}</p>
-                </div><br/><br/>
-                <button className={css.formBtns} onClick={handleLogin}>{loginbtnTxt}</button>
-                <div className={css.bottomInfo}>
-                    <p className={css.bottomTxt}>Dont have an account? <span className={css.bluetxt} onClick={()=>{gotosignup()}}>Sign up</span></p>
-                </div> 
+        </div>
+
+        {/* Login form */}
+        <div className={loginState}>
+            <div className={css.fromHeader}>
+                <p className={css.formTitle}>Welcome back</p>
+                <div className={css.closeIcon} onClick={()=>{closePopup()}}/>
+            </div>
+            <input type="email" className={css.formInputs} placeholder="Email" onChange={(e) => setEmailLogin(e.target.value)}/><br/><br/>
+            <div className={css.passwordDiv}>
+                <input type={loginPasswordtype} className={css.passwordInput} placeholder="Password" onChange={(e) => setPasswordLogin(e.target.value)}/><br/><br/>
+                <p className={css.show} onClick={()=>{showloginPassword()}}>{showlogin}</p>
+            </div><br/><br/>
+            <button className={css.formBtns} onClick={handleLogin}>{loginbtnTxt}</button>
+            <div className={css.bottomInfo}>
+                <p className={css.bottomTxt}>Dont have an account? <span className={css.bluetxt} onClick={()=>{gotosignup()}}>Sign up</span></p>
+            </div> 
             </div>
         </div>
 
         {/* Main content */}
+        {/* Honestly i don't even want to try and figure out what i did here will properly comment this later */}
         <div className={css.container}>
             <div className={css.header}>
                 <Logo/>
@@ -255,6 +282,8 @@ export default function Index(){
                         <div className={css.bottomuser}/>
                 </div>
             </div>
+
+            {/* Footer */}
             <div className={css.footer}>
                 <p className={css.footertxt}>2023 © Carl-labs</p>
             </div>

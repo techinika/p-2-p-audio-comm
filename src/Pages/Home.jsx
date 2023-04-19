@@ -12,13 +12,16 @@ import { SyncLoader } from "react-spinners";
 import Popup from "../Components/Popup";
 
 export default function Home(){
+    // Setting variables 
     const { user } = useUserAuth();
-    const navigation = useNavigate();
     const [joining, setJoining] = useState(false);
     const [roomId, setRoomId] = useState(null);
     const [errorcolor, setErrorcolor] = useState(null);
     const [errormsg, setErrormsg] = useState(null);
     const [popupstate, setPopupstate] = useState(false);
+    const navigation = useNavigate();
+
+    // startroom will create a 16char uid and navigate to room page 
     const startRoom = async () => {
         setJoining(true)
         const shortUUID = new ShortUniqueId({ length: 16 });
@@ -33,6 +36,8 @@ export default function Home(){
         });
         navigation(`/${uuid}`)
     }
+
+    // joinbyID will verify whether the roomid is valid then if room exists before navigating to room 
     const joinbyID = async () => {
         if (roomId.split("").length == 19) {
             const roomRef = doc(db, "rooms", roomId);
@@ -46,50 +51,62 @@ export default function Home(){
             popup("red", "This is an invalid Room ID")
         }
     }
+
+    // function for popup component 
     function popup(color,msg){
         setErrorcolor(color);
         setErrormsg(msg);
         setPopupstate(true);
         setTimeout(()=>{setPopupstate(false)},5000);
     }
+
+    // Show loading screen while you wait for user object
     if(user == null){
         return <LoadingScreen/>
     }
-    console.log(user)
     return(
         <>
         <body>
-        <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
-        <div className={joining ? css.visible : css.hidden}>
-            <p className={css.loadingtxt}>Joining</p>
-            <SyncLoader color={"#ffffff"}size={5}/>
-        </div>
-        <Header username={user.displayName} displayImage={user.photoURL==null ? displayImage : user.photoURL}/>
-        <div className={css.mainContent}>
-            <p className={css.title}>What's on your mind?</p>
-            <p className={css.description}>
-                A small glimpse of what's possible: One on one chatroom, Multi-user chatroom, 
-                Screen sharing, Voicenote sharinging in mutli-user chatrooms and much much more on the way 😍
-            </p>
-            <div className={css.controlsDiv}>   
-                <button className={css.createRoombtn} onClick={()=>{startRoom()}}>
-                    <div className={css.addicon}/>
-                    Create Room</button>
-                    <div className={css.formdiv}>
-                        <input type="text" 
-                            placeholder="Enter Room ID to join as guest" 
-                            className={css.linkinput}
-                            onChange={(e) => setRoomId(e.target.value)}
-                        />
-                        <button className={css.joinbtn} onClick={()=>{joinbyID()}}>
-                        <div className={css.joinicon}/>
-                        </button>
-                    </div>
+            {/* popup component */}
+            <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
+
+            {/* Joining overlay */}
+            <div className={joining ? css.visible : css.hidden}>
+                <p className={css.loadingtxt}>Joining</p>
+                <SyncLoader color={"#ffffff"}size={5}/>
             </div>
-        </div>
-        <div className={css.footer}>
-            <p className={css.footertxt}>2023 © Carl-labs</p>
-        </div>
+
+            {/* Header component */}
+            <Header username={user.displayName} displayImage={user.photoURL==null ? displayImage : user.photoURL}/>
+            
+            {/* Main content */}
+            <div className={css.mainContent}>
+                <p className={css.title}>What's on your mind?</p>
+                <p className={css.description}>
+                    A small glimpse of what's possible: One on one chatroom, Multi-user chatroom, 
+                    Screen sharing, Voicenote sharinging in mutli-user chatrooms and much much more on the way 😍
+                </p>
+                <div className={css.controlsDiv}>   
+                    <button className={css.createRoombtn} onClick={()=>{startRoom()}}>
+                        <div className={css.addicon}/>
+                        Create Room</button>
+                        <div className={css.formdiv}>
+                            <input type="text" 
+                                placeholder="Enter Room ID to join as guest" 
+                                className={css.linkinput}
+                                onChange={(e) => setRoomId(e.target.value)}
+                            />
+                            <button className={css.joinbtn} onClick={()=>{joinbyID()}}>
+                            <div className={css.joinicon}/>
+                            </button>
+                        </div>
+                </div>
+            </div>
+
+            {/* Footer */}
+            <div className={css.footer}>
+                <p className={css.footertxt}>2023 © Carl-labs</p>
+            </div>
         </body>
         </>
     );
