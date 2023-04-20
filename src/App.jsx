@@ -6,6 +6,7 @@ import Index from "./Pages/Index";
 import Room from "./Pages/Room";
 import Account from "./Pages/Account";
 import Avatar from "./Pages/Avatar";
+import Sandbox from "./Pages/Sandbox";
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
         <Route path="/u/:username" element={<ProtectedRoute><Account/></ProtectedRoute>}></Route>
         <Route path="/avatar/:roomID" element={<Avatar/>}></Route>
         <Route path="/:roomID" element={<Room/>}></Route>
+        <Route path="/sandbox" element={<Sandbox/>}></Route>
       </Routes>
     </AuthContextProvider>
     </>

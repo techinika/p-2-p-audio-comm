@@ -166,7 +166,7 @@ export default function Room(){
                     <div className={css.iconcontainer}>
                         <div className={css.chat}/>
                     </div>
-                    <div className={css.iconcontainer}>
+                    <div className={css.iconcontainer} style={{backgroundColor: "#8AB4F8"}}>
                         <div className={css.info}/>
                     </div>
                     <div className={css.leaveroom}>Leave Room</div>
