@@ -57,11 +57,13 @@
     width: 150px;
     height: 150px;
     border-radius: 150px;
+    z-index: 1;
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
 }
 .center{
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 .username{
     font-size: 16px;
@@ -200,7 +202,10 @@
     bottom: 0;
     margin-top: 5px;
 }
-
+.canvas{
+    /* border: 1px solid black; */
+    position: absolute;
+}
 @media only screen and (max-width: 985px) {
 .sidepanel{
     display: none;
