@@ -1,68 +1,63 @@
 import { useEffect } from "react";
 import { useRef } from "react";
+import css from "../Assets/css/Sandbox.module.css"
+import img from "../Assets/images/Images/steve.png"
 
 export default function Sandbox(){
-  const canvasRef = useRef(null);
-  const contextRef = useRef(null);
+  const circleRef = useRef(null);
   let frequencyData = [];
   let bufferLength = 0;
   let analyser;
-  
-  useEffect(()=>{
-    const canvas = canvasRef.current;
-    canvas.width = 200;
-    canvas.height = 200;
-    const context = canvas.getContext("2d");
-    contextRef.current = context;
-  }, []);
 
-  const audioTest = async () => {
+  navigator.mediaDevices.getUserMedia({audio: true})
+  .then(stream => {
+      const audioCtx = new AudioContext();
+      const source = audioCtx.createMediaStreamSource(stream);
+      analyser = createAnalyser(audioCtx, source);
+      bufferLength = analyser.frequencyBinCount;
+      frequencyData = new Uint8Array(bufferLength);
+      drawCircle();
+  })
+  .catch(err => {
+      alert(err)
+  });
 
-    navigator.mediaDevices.getUserMedia({audio: true})
-    .then(stream => {
-        const audioCtx = new AudioContext();
-        const source = audioCtx.createMediaStreamSource(stream);
-        analyser = createAnalyser(audioCtx, source);
-        bufferLength = analyser.frequencyBinCount;
-        frequencyData = new Uint8Array(bufferLength);
-        drawBar();
-    })
-    .catch(err => {
-        alert(err)
-    });
-
-    function createAnalyser(context, dataSource) {
-        const analyser = context.createAnalyser();
-        analyser.fftSize = 64;
-        dataSource.connect(analyser);
-        return analyser;
-    }
-
-    
-    function drawBar(){
-      requestAnimationFrame(drawBar);
-      analyser.getByteFrequencyData(frequencyData);
-      contextRef.current.clearRect(0, 0, 200, 200);
-      const frequencySum = frequencyData.reduce((a, b) => a + b);
-      const minifedFrequency = frequencySum/50;
-      let outputfrequency;
-      if (minifedFrequency > 98) {
-          outputfrequency = 98;
-      } else {
-          outputfrequency = minifedFrequency;
-      }
-      console.log(outputfrequency);
-      contextRef.current.beginPath();
-      contextRef.current.arc(100, 100, outputfrequency, 0, 2 * Math.PI);
-      contextRef.current.fillStyle= "#414245";
-      contextRef.current.fill();
-    }
+  function createAnalyser(context, dataSource) {
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 32;
+      dataSource.connect(analyser);
+      return analyser;
   }
-  audioTest();
+
+  function drawCircle(){
+    requestAnimationFrame(drawCircle);
+    analyser.getByteFrequencyData(frequencyData);
+    const frequencySum = frequencyData.reduce((a, b) => a + b);
+    const minifedFrequency = frequencySum/8;
+    console.log(minifedFrequency)
+    let outputfrequency;
+    if (minifedFrequency > 230) {
+        outputfrequency = 230;
+    } else if (minifedFrequency < 150) {
+      outputfrequency = 150;
+    } else {
+        outputfrequency = minifedFrequency;
+    }
+    
+    circleRef.current.style.height = outputfrequency + 'px';
+    circleRef.current.style.width = outputfrequency + 'px';
+    // circleRef.current.style.borderRadius = outputfrequency + 'px';
+  }
   return (
     <>
-    <h1>This is the code sandbox</h1>
-    <canvas ref={canvasRef}></canvas>
+    {/* <h1>This is the code sandbox</h1> */}
+    <div className={css.body}>
+      
+    <div className={css.center}>
+      <div className={css.circle} ref={circleRef}></div>
+      <img src={img} className={css.userImage}/>
+    </div>
+    </div>
     </>
   )
 }
