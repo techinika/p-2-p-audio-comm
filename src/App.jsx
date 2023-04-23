@@ -20,7 +20,7 @@ function App() {
         <Route path="/avatar/:roomID" element={<Avatar/>}></Route>
         <Route path="/:roomID" element={<Room/>}></Route>
         <Route path="/sandbox" element={<Sandbox/>}></Route>
-        <Route path="/compsandbox" element={<Multispeaker/>}></Route>
+        <Route path="/compsandbox" element={<Singlespeaker/>}></Route>
       </Routes>
     </AuthContextProvider>
     </>

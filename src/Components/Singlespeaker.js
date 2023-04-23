@@ -9,7 +9,7 @@ export default function Singlespeaker(props){
     let bufferLength = 0;
     let analyser;
     let width;
-    let height
+    let height;
     
     useEffect(()=>{
       const canvas = canvasRef.current;
@@ -28,7 +28,7 @@ export default function Singlespeaker(props){
         analyser = createAnalyser(audioCtx, source);
         bufferLength = analyser.frequencyBinCount;
         frequencyData = new Uint8Array(bufferLength);
-        drawBar();
+        drawCircle();
     })
     .catch(err => {
         alert(err)
@@ -41,12 +41,12 @@ export default function Singlespeaker(props){
         return analyser;
     }
 
-    function drawBar(){
-      requestAnimationFrame(drawBar);
+    function drawCircle(){
+      requestAnimationFrame(drawCircle);
       analyser.getByteFrequencyData(frequencyData);
       contextRef.current.clearRect(0, 0, width, height);
       const frequencySum = frequencyData.reduce((a, b) => a + b);
-      const minifedFrequency = frequencySum/20;
+      const minifedFrequency = frequencySum/16;
       let outputfrequency;
       if (minifedFrequency > 110) {
           outputfrequency = 110;
