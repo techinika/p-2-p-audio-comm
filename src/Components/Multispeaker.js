@@ -3,12 +3,16 @@ import css from '../Assets/css/roomScreen.module.css';
 import displayImage from "../Assets/images/Images/default_dp.jpg";
 
 export default function Multispeaker(props){
+    const circleRef = useRef(null);
     const leftRef = useRef(null);
     const centerRef = useRef(null);
     const rightRef = useRef(null);
-    let frequencyData = [];
+    let frequencyData = [0,0];
     let bufferLength = 0;
     let analyser;
+    let peerfrequencyData = [0,0];
+    let peerbufferLength = 0;
+    let peeranalyser;
   
     navigator.mediaDevices.getUserMedia({audio: true})
     .then(stream => {
@@ -22,11 +26,47 @@ export default function Multispeaker(props){
     .catch(err => {
         alert(err)
     });
+    
+    let getPeerAudio = async () => {
+        const peeraudioCtx = new AudioContext();
+        const peersource = await peeraudioCtx.createMediaStreamSource(props.peerAudio);
+        peeranalyser = createpeerAnalyser(peeraudioCtx, peersource);
+        peerbufferLength = peeranalyser.frequencyBinCount;
+        peerfrequencyData = new Uint8Array(peerbufferLength);
+        drawPeerCircle();
+    }
+    getPeerAudio();
     function createAnalyser(context, dataSource) {
         const analyser = context.createAnalyser();
         analyser.fftSize = 64;
         dataSource.connect(analyser);
         return analyser;
+    }
+
+    
+    function createpeerAnalyser(context, dataSource) {
+        const peeranalyser = context.createAnalyser();
+        peeranalyser.fftSize = 64;
+        dataSource.connect(peeranalyser);
+        return peeranalyser;
+    }
+
+    function drawPeerCircle(){
+        requestAnimationFrame(drawPeerCircle);
+        peeranalyser.getByteFrequencyData(peerfrequencyData);
+        const peerfrequencySum = peerfrequencyData.reduce((a, b) => a + b);
+        const peerminifedFrequency = peerfrequencySum/12;
+        console.log(peerminifedFrequency)
+        let peeroutputfrequency;
+        if (peerminifedFrequency > 230) {
+            peeroutputfrequency = 230;
+        } else if (peerminifedFrequency < 150) {
+          peeroutputfrequency = 150;
+        } else {
+            peeroutputfrequency = peerminifedFrequency;
+        }
+        circleRef.current.style.height = peeroutputfrequency + 'px';
+        circleRef.current.style.width = peeroutputfrequency + 'px';
     }
     
     function drawBar(){
@@ -64,6 +104,7 @@ export default function Multispeaker(props){
             </div>
         </div>
         <div className={css.center}>
+            <div className={css.circle} ref={circleRef}></div>
             <img src={props.peerImg==null ? displayImage : props.peerImg} className={css.userImage}/>
         </div>
         <div className={css.bottom}>

@@ -206,6 +206,14 @@
     /* border: 1px solid black; */
     position: absolute;
 }
+.circle{
+    background-color: #6A6B70;
+    width: 150px;
+    height: 150px;
+    border-radius: 150px;
+    display: block;
+    position: absolute;
+}
 .smallVisualizer{
     background-color: #0088FF;
     width: 27px;

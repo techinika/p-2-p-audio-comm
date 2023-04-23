@@ -14,7 +14,7 @@ export default function Room(){
     let pc;
     let localstream;
     let remotestream;
-    let localvid = useRef();
+    // let localvid = useRef();
     let remotevid = useRef();
     let params = useParams();
     const navigation = useNavigate();
@@ -52,7 +52,8 @@ export default function Room(){
     // Creating offer function
     let creatingOffer = async (roomRef, data) => {
         localstream = await navigator.mediaDevices.getUserMedia({audio: true})
-        localvid.current.srcObject = localstream;
+        // localvid.current.srcObject = localstream;
+        // console.log(localstream)
         pc = new RTCPeerConnection();
         remotestream = new MediaStream()
         remotevid.current.srcObject = remotestream
@@ -86,7 +87,9 @@ export default function Room(){
             let theanswer = JSON.parse(answer.answer)
             if (!pc.currentRemoteDescription) {
                 pc.setRemoteDescription(theanswer)
-                setSpeaker(<Multispeaker peerImg={answer.displayImg} peerName={answer.username} profileimg={user.photoURL}/>)
+                setTimeout(()=>{
+                    setSpeaker(<Multispeaker peerImg={answer.displayImg} peerName={answer.username} profileimg={user.photoURL} peerAudio={remotestream}/>)
+                },1000);
             }
         });
     }
@@ -97,7 +100,7 @@ export default function Room(){
             // Do nothing this prevents creating answer when you are the Host
         }else{
             localstream = await navigator.mediaDevices.getUserMedia({video: false, audio: true})
-            localvid.current.srcObject = localstream;
+            // localvid.current.srcObject = localstream;
             pc = new RTCPeerConnection();
             remotestream = new MediaStream()
             remotevid.current.srcObject = remotestream
@@ -129,7 +132,7 @@ export default function Room(){
                         }
                         await setDoc(doc(db, "rooms", roomid), { pushedAnswer }, { merge: true });
                     }
-                    setSpeaker(<Multispeaker peerImg={data.pushedOffer.displayImg} peerName={data.pushedOffer.username} profileimg={user.photoURL}/>)
+                    setSpeaker(<Multispeaker peerImg={data.pushedOffer.displayImg} peerName={data.pushedOffer.username} profileimg={user.photoURL} peerAudio={remotestream}/>)
                 }
             }
             let offer = JSON.parse(data.pushedOffer.offer)
@@ -150,7 +153,7 @@ export default function Room(){
         <>
         <div className={css.container}><div className={css.content}>
                 {speaker} 
-                <audio src="" ref={localvid}></audio>
+                {/* <audio src="" ref={localvid}></audio> */}
                 <audio src="" ref={remotevid}></audio>
                 <Popup color={errorcolor} msg={errormsg} state={popupstate}/>
                 <Infosidepanel roomid={roomid} />
