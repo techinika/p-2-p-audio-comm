@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
 import css from '../Assets/css/roomScreen.module.css';
 import displayImage from "../Assets/images/Images/default_dp.jpg";
+import microphone from "../Assets/images/Icons/microphone.png";
+import mic from "../Assets/images/Icons/mic.png";
 
 export default function Singlespeaker(props){
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
+    const smallMicRef = useRef(null);
     let frequencyData = [];
     let bufferLength = 0;
     let analyser;
@@ -42,31 +45,38 @@ export default function Singlespeaker(props){
     }
 
     function drawCircle(){
-      requestAnimationFrame(drawCircle);
-      analyser.getByteFrequencyData(frequencyData);
-      contextRef.current.clearRect(0, 0, width, height);
-      const frequencySum = frequencyData.reduce((a, b) => a + b);
-      const minifedFrequency = frequencySum/16;
-      let outputfrequency;
-      if (minifedFrequency > 110) {
-          outputfrequency = 110;
-      } else if (minifedFrequency < 70) {
-        outputfrequency = 74;
-      } else {
-          outputfrequency = minifedFrequency;
-      }
-      contextRef.current.beginPath();
-      contextRef.current.arc(112, 112, outputfrequency, 0, 2 * Math.PI);
-      contextRef.current.fillStyle= "#6A6B70";
-      contextRef.current.fill();
+        requestAnimationFrame(drawCircle);
+        analyser.getByteFrequencyData(frequencyData);
+        contextRef.current.clearRect(0, 0, width, height);
+        const frequencySum = frequencyData.reduce((a, b) => a + b);
+        const minifedFrequency = frequencySum/16;
+        let outputfrequency;
+        let micstate = localStorage.getItem("micstate");
+        if (micstate === "false") {
+            outputfrequency = 74;
+            // smallMicRef.current.className = css.micOff;
+        }else{
+            // smallMicRef.current.className = css.micOn;
+            if (minifedFrequency > 110) {
+                outputfrequency = 110;
+            } else if (minifedFrequency < 70) {
+              outputfrequency = 74;
+            } else {
+                outputfrequency = minifedFrequency;
+            }
+        }
+        contextRef.current.beginPath();
+        contextRef.current.arc(112, 112, outputfrequency, 0, 2 * Math.PI);
+        contextRef.current.fillStyle= "#6A6B70";
+        contextRef.current.fill();
     }
     return(
         <>
         <div className={css.speaker}>
             <div className={css.top}>
-                <div className={css.smallmiccont}>
-                    <div className={css.smallmic}/>
-                </div>
+                {/* <div className={css.smallmiccont}> */}
+                    {/* <div className={css.micOn} ref={smallMicRef}/> */}
+                {/* </div> */}
             </div>
             <div className={css.center}>
                 <canvas ref={canvasRef} className={css.canvas}></canvas>

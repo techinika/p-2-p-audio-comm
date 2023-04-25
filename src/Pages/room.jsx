@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import css from '../Assets/css/roomScreen.module.css'
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../firebase';
@@ -22,6 +22,7 @@ export default function Room(){
     const [errorcolor, setErrorcolor] = useState(null);
     const [errormsg, setErrormsg] = useState(null);
     const [popupstate, setPopupstate] = useState(false);
+    const [micstate, setMicstate] = useState(true);
     const [speaker, setSpeaker] = useState(<Singlespeaker name={user.displayName} profileimg={user.photoURL}/>);
     let roomid = params.roomID;
     let servers = {
@@ -32,6 +33,10 @@ export default function Room(){
             }
         ]
     }
+
+    useEffect(()=>{
+        localStorage.setItem("micstate", "true");
+    },[]);
 
     // start function runs on page load checks if room exists then checks if offer exist
     let start = async () => {
@@ -148,6 +153,21 @@ export default function Room(){
         setPopupstate(true);
         setTimeout(()=>{setPopupstate(false)},5000);
     }
+
+    function muteUser(){
+        const audioTrack = localstream.getTracks().find(track => track.kind ===  'audio');
+        if (micstate == false) {
+            popup("blue", "Microphone on");
+            setMicstate(true);
+            localStorage.setItem("micstate", "true");
+            audioTrack.enabled = false;
+        }else if(micstate == true){
+            popup("blue", "Microphone off");
+            setMicstate(false);
+            localStorage.setItem("micstate", "false");
+            audioTrack.enabled = true;
+        }
+    }
     start();
     return(
         <>
@@ -160,8 +180,8 @@ export default function Room(){
             </div>
             <div className={css.controls}>
                 <div className={css.centercontrols}>
-                    <div className={css.iconcontainer}>
-                        <div className={css.microphone}/>
+                    <div className={micstate ? css.iconcontainer : css.rediconcontainer} onClick={()=>{muteUser()}}>
+                        <div className={micstate ? css.microphone : css.micmuted}/>
                     </div>
                     <div className={css.iconcontainer}>
                         <div className={css.present}/>

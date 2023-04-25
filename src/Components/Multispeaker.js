@@ -7,6 +7,9 @@ export default function Multispeaker(props){
     const leftRef = useRef(null);
     const centerRef = useRef(null);
     const rightRef = useRef(null);
+    const myVismuted = useRef(null);
+    const myVisActive = useRef(null);
+    const smallMicRef = useRef(null);
     let frequencyData = [0,0];
     let bufferLength = 0;
     let analyser;
@@ -56,7 +59,7 @@ export default function Multispeaker(props){
         peeranalyser.getByteFrequencyData(peerfrequencyData);
         const peerfrequencySum = peerfrequencyData.reduce((a, b) => a + b);
         const peerminifedFrequency = peerfrequencySum/12;
-        console.log(peerminifedFrequency)
+        // console.log(peerminifedFrequency)
         let peeroutputfrequency;
         if (peerminifedFrequency > 230) {
             peeroutputfrequency = 230;
@@ -70,37 +73,43 @@ export default function Multispeaker(props){
     }
     
     function drawBar(){
-      requestAnimationFrame(drawBar);
-      let outputfrequency;
-      let sideDots;
-      analyser.getByteFrequencyData(frequencyData);
-      const frequencySum = frequencyData.reduce((a, b) => a + b);
-      const minifedFrequency = frequencySum/300;
-      if (minifedFrequency > 18){
-          outputfrequency = 18;
-      }else if(minifedFrequency < 5){
-          outputfrequency = 4;
-      }else{
-          outputfrequency = minifedFrequency;
-      }
-      let sideFrequency = outputfrequency-3
-      if(sideFrequency > 10){
-        sideDots = 10;
-      }else if(sideFrequency < 5){
-        sideDots = 4;
-      }else{
-        sideDots = sideFrequency;
-      }
-      leftRef.current.style.height = sideDots + 'px';
-      centerRef.current.style.height = outputfrequency + 'px';
-      rightRef.current.style.height = sideDots + 'px';
+        requestAnimationFrame(drawBar);
+        let outputfrequency;
+        let sideDots;
+        analyser.getByteFrequencyData(frequencyData);
+        const frequencySum = frequencyData.reduce((a, b) => a + b);
+        const minifedFrequency = frequencySum/300;
+        let micstate = localStorage.getItem("micstate");
+        if (minifedFrequency > 18){
+            outputfrequency = 18;
+        }else if(minifedFrequency < 5){
+            outputfrequency = 4;
+        }else{
+            outputfrequency = minifedFrequency;
+        }
+        let sideFrequency = outputfrequency-3
+        if(sideFrequency > 10){
+          sideDots = 10;
+        }else if(sideFrequency < 5){
+          sideDots = 4;
+        }else{
+          sideDots = sideFrequency;
+        }
+        if (micstate === "false") {
+            myVisActive.current.style.display = "none"
+        }else{
+            myVisActive.current.style.display = "flex"
+        }
+        leftRef.current.style.height = sideDots + 'px';
+        centerRef.current.style.height = outputfrequency + 'px';
+        rightRef.current.style.height = sideDots + 'px';
     }
     return(
         <>
         <div className={css.speaker}>
         <div className={css.top}>
             <div className={css.smallmiccont}>
-                <div className={css.smallmic}/>
+                <div className={css.micOn} ref={smallMicRef}/>
             </div>
         </div>
         <div className={css.center}>
@@ -112,11 +121,14 @@ export default function Multispeaker(props){
             <div className={css.smallspeaker}>
                 <div className={css.youdiv}>
                 <img src={!props.profileimg ? displayImage : props.profileimg} className={css.smalluserImg}/>
-                  <div className={css.smallVisualizer}>
-                    <div className={css.dots} ref={leftRef}></div>
-                    <div className={css.dots} ref={centerRef}></div>
-                    <div className={css.dots} ref={rightRef}></div>
-                  </div>
+                    <div className={css.smallVisualizerMuted} ref={myVismuted}>
+                        <div className={css.muteIconOnVisualizer}/>
+                    </div>
+                    <div className={css.smallVisualizer} ref={myVisActive}>
+                      <div className={css.dots} ref={leftRef}></div>
+                      <div className={css.dots} ref={centerRef}></div>
+                      <div className={css.dots} ref={rightRef}></div>
+                    </div>
                 </div>
                 <p className={css.you}>You</p>
             </div>
